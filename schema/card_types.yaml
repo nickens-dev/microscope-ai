@@ -1,0 +1,28 @@
+Card:
+  id: UUID
+  type: str                 # "period", "event", "scene", "definition"
+
+  # Relationships
+  game_id: UUID
+  author_id: UUID           # player or agent
+  parent_id: UUID           # for definition nesting or child cards
+  period_id: UUID           # if this card is an Event
+  event_id: UUID            # if this card is a Scene
+
+  # Core metadata
+  summary: str
+  content: str              # full description text
+  tone: str                 # "light" or "dark"
+  position: int             # ordering within parent
+
+  # Scene-specific
+  question: str
+  answer: str
+  dictated: bool
+
+  # Timestamps
+  created_at: datetime
+  updated_at: datetime
+
+  # Related card IDs from many-to-many tags
+  tag_ids: List[UUID]

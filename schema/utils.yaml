@@ -1,0 +1,14 @@
+Tag:
+  id: UUID
+  name: str
+  game_id: UUID
+  card_ids: List[UUID]
+
+Legacy:
+  id: UUID
+  name: str
+  game_id: UUID
+  author_id: UUID
+  reference_card_id: UUID
+  created_at: datetime
+  updated_at: datetime

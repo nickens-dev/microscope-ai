@@ -1,0 +1,24 @@
+Game:
+  id: UUID
+  name: str
+  created_at: datetime
+  updated_at: datetime
+  big_picture: str
+  palette_yes: List[str]
+  palette_no: List[str]
+  starting_period_id: UUID
+  ending_period_id: UUID
+
+Player:
+  id: UUID
+  name: str
+  is_agent: bool
+
+Focus:
+  id: UUID
+  name: str
+  turn: int
+  created_at: datetime
+  updated_at: datetime
+  author_id: UUID     # Nullable
+  game_id: UUID       # Nullable
