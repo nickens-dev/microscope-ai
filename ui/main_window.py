@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
 
     def _create_main_layout(self):
 
-        # Game Sidebar Info
+        # ---------- GAME PANEL / FIRST COLUMN ---------- #
         self.sidebar = QWidget()
         self.sidebar_layout = QVBoxLayout()
 
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
             self.sidebar_layout.addWidget(widget)
         self.sidebar.setLayout(self.sidebar_layout)
 
-        # Tree View, Middle
+        # ---------- TREE PANEL / SECOND COLUMN ---------- #
         self.main_tree = QTreeWidget()
         self.main_tree.setColumnCount(1)
         self.main_tree.setHeaderLabel("Story Structure")
@@ -95,16 +95,31 @@ class MainWindow(QMainWindow):
         tree_widget_container = QWidget()
         tree_widget_container.setLayout(self.tree_column)
 
-        # Card Detail Display
+        # ---------- CARD PANEL / THIRD COLUMN ---------- #
         self.card_text = QTextEdit()
         self.card_text.setReadOnly(True)
         self.card_text.setPlaceholderText("Card Viewer")
 
-        # Main Layout
+        self.button_edit_card = QPushButton("Edit Card")
+        self.button_delete_card = QPushButton("Delete Card")
+
+        self.button_edit_card.clicked.connect(self._edit_selected_card)
+        self.button_delete_card.clicked.connect(self._delete_selected_card)
+
+        self.card_column = QVBoxLayout()
+        self.card_column.addWidget(self.card_text)
+        self.card_column.addWidget(self.button_edit_card)
+        self.card_column.addWidget(self.button_delete_card)
+
+        self.card_detail_container = QWidget()
+        self.card_detail_container.setLayout(self.card_column)
+
+
+        # ---------- MAIN LAYOUT ---------- #
         self.main_layout = QHBoxLayout()
         self.main_layout.addWidget(self.sidebar, 1)
         self.main_layout.addWidget(tree_widget_container, 2)
-        self.main_layout.addWidget(self.card_text, 3)
+        self.main_layout.addWidget(self.card_detail_container, 3)
 
         container = QWidget()
         container.setLayout(self.main_layout)
@@ -249,6 +264,44 @@ class MainWindow(QMainWindow):
                 import traceback
                 traceback.print_exc()
                 QMessageBox.critical(self, "Error", f"Failed to create scene:\n{e}")
+
+    def _edit_selected_card(self):
+        item = self.main_tree.currentItem()
+        if not item:
+            QMessageBox.warning(self, "No Card Selected", "Select a card to edit.")
+            return
+
+        card_data = item.data(0, Qt.UserRole)
+        summary, ok = QInputDialog.getText(self, "Edit Card", "New summary:", text=card_data["summary"])
+        if ok and summary:
+            try:
+                update_card(UUID(card_data["id"]), summary=summary)
+                self._display_game(self.current_game)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                QMessageBox.critical(self, "Error", f"Failed to update card:\n{e}")
+
+    def _delete_selected_card(self):
+        item = self.main_tree.currentItem()
+        if not item:
+            QMessageBox.warning(self, "No Card Selected", "Select a card to delete.")
+            return
+
+        card_data = item.data(0, Qt.UserRole)
+        confirm = QMessageBox.question(
+            self, "Delete Card",
+            f"Are you sure you want to delete '{card_data['summary']}'?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if confirm == QMessageBox.Yes:
+            try:
+                delete_card(UUID(card_data["id"]))
+                self._display_game(self.current_game)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                QMessageBox.critical(self, "Error", f"Failed to delete card:\n{e}")
 
     def _build_tree_from_cards(self, cards):
         self.main_tree.clear()
