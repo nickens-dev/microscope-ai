@@ -18,12 +18,19 @@ def create_card(game_id: UUID,
         type = card_type,
         summary = summary,
         content = content,
-        partent_id = parent_id,
+        parent_id = parent_id,
         period_id = period_id,
         event_id = event_id,
         created_at = datetime.now(timezone.utc),
         updated_at = datetime.now(timezone.utc)
     )
+
+    last_position = db.query(Card).filter(
+        Card.game_id == game_id, Card.type == card_type
+    ).order_by(Card.position.desc()).first()
+
+    card.position = (last_position.position + 1) if last_position else 0
+
     db.add(card)
     db.commit()
     db.refresh(card)

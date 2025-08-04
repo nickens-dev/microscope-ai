@@ -70,6 +70,31 @@ class MainWindow(QMainWindow):
         self.main_tree.setHeaderLabel("Story Structure")
         self.main_tree.itemClicked.connect(self._on_tree_click)
 
+        # Card Control Buttons
+        self.button_add_period = QPushButton("Add Period")
+        self.button_add_event = QPushButton("Add Event")
+        self.button_add_scene = QPushButton("Add Scene")
+
+        self.button_add_period.clicked.connect(self._add_period)
+        self.button_add_event.clicked.connect(self._add_event)
+        self.button_add_scene.clicked.connect(self._add_scene)
+
+        self.card_button_row = QHBoxLayout()
+        self.card_button_row.addWidget(self.button_add_period)
+        self.card_button_row.addWidget(self.button_add_event)
+        self.card_button_row.addWidget(self.button_add_scene)
+
+
+        self.tree_column = QVBoxLayout()
+        self.tree_column.addWidget(self.main_tree)
+
+        button_container = QWidget()
+        button_container.setLayout(self.card_button_row)
+        self.tree_column.addWidget(button_container)
+
+        tree_widget_container = QWidget()
+        tree_widget_container.setLayout(self.tree_column)
+
         # Card Detail Display
         self.card_text = QTextEdit()
         self.card_text.setReadOnly(True)
@@ -78,7 +103,7 @@ class MainWindow(QMainWindow):
         # Main Layout
         self.main_layout = QHBoxLayout()
         self.main_layout.addWidget(self.sidebar, 1)
-        self.main_layout.addWidget(self.main_tree, 2)
+        self.main_layout.addWidget(tree_widget_container, 2)
         self.main_layout.addWidget(self.card_text, 3)
 
         container = QWidget()
@@ -117,35 +142,8 @@ class MainWindow(QMainWindow):
         self.label_palette_yes.setText(f"Palette (Yes): {game.palette_yes or ''}")
         self.label_palette_no.setText(f"Palette (No): {game.palette_no or ''}")
 
-        # TODO - list of objects associated with game
-        # TEMPORARY: sample structure
-        self.main_tree.clear()
-
-        period_item = QTreeWidgetItem(["The Rise of the Empire"])
-        period_item.setData(0, Qt.UserRole, {
-            "type": "period",
-            "summary": "The Rise of the Empire",
-            "content": "A time of conquest and unity."
-        })
-
-        event_item = QTreeWidgetItem(["Coronation of the First Emperor"])
-        event_item.setData(0, Qt.UserRole, {
-            "type": "event",
-            "summary": "Coronation of the First Emperor",
-            "content": "The emperor claims the throne in a grand ceremony."
-        })
-
-        scene_item = QTreeWidgetItem(["The Prophecy is Spoken"])
-        scene_item.setData(0, Qt.UserRole, {
-            "type": "scene",
-            "summary": "The Prophecy is Spoken",
-            "content": "A seer warns of dark times during the celebration."
-        })
-
-        event_item.addChild(scene_item)
-        period_item.addChild(event_item)
-        self.main_tree.addTopLevelItem(period_item)
-        self.main_tree.expandAll()
+        cards = get_cards_by_game_id(game.id)
+        self._build_tree_from_cards(cards)
 
     def _edit_game(self):
         # TODO - add edit fields and logic
@@ -182,4 +180,107 @@ class MainWindow(QMainWindow):
                 f"Content: \n{card_data.get('content', '')}"
             )
 
+    def _add_period(self):
+        if not self.current_game:
+            return
 
+        summary, ok = QInputDialog.getText(self, "Add Period", "Summary:")
+        if ok and summary:
+            try:
+                card = create_card(
+                    game_id=self.current_game.id,
+                    card_type="period",
+                    summary=summary
+                )
+                self._display_game(self.current_game)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                QMessageBox.critical(self, "Error", f"Failed to create period:\n{e}")
+
+    def _add_event(self):
+        item = self.main_tree.currentItem()
+        if not item:
+            QMessageBox.warning(self, "No Period Selected", "Select a period to add an event.")
+            return
+
+        period_data = item.data(0, Qt.UserRole)
+        if period_data.get("type") != "period":
+            QMessageBox.warning(self, "Invalid Selection", "Select a period to add an event.")
+            return
+
+        summary, ok = QInputDialog.getText(self, "Add Event", "Summary:")
+        if ok and summary:
+            try:
+                card = create_card(
+                    game_id=self.current_game.id,
+                    card_type='event',
+                    summary=summary,
+                    period_id=UUID(period_data.get("id"))
+                )
+                self._display_game(self.current_game)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                QMessageBox.critical(self, "Error", f"Failed to create event:\n{e}")
+
+    def _add_scene(self):
+        item = self.main_tree.currentItem()
+        if not item:
+            QMessageBox.warning(self, "No Event Selected", "Select an event to add a scene.")
+            return
+
+        event_data = item.data(0, Qt.UserRole)
+        if event_data.get("type") != "event":
+            QMessageBox.warning(self, "Invalid Selection", "Select an event to add a scene.")
+            return
+
+        summary, ok = QInputDialog.getText(self, "Add Scene", "Summary:")
+        if ok and summary:
+            try:
+                card = create_card(
+                    game_id=self.current_game.id,
+                    card_type='scene',
+                    summary=summary,
+                    event_id=UUID(event_data.get("id"))
+                )
+                self._display_game(self.current_game)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                QMessageBox.critical(self, "Error", f"Failed to create scene:\n{e}")
+
+    def _build_tree_from_cards(self, cards):
+        self.main_tree.clear()
+
+        period_map = {}
+        event_map = {}
+
+        for card in cards:
+            card_data = {
+                "id": str(card.id),
+                "type": card.type,
+                "summary": card.summary,
+                "content": card.content or ""
+            }
+
+            item = QTreeWidgetItem()
+
+            if card.type == "period":
+                item.setText(0, "PERIOD: " + card.summary)
+                item.setData(0, Qt.UserRole, card_data)
+                self.main_tree.addTopLevelItem(item)
+                period_map[card.id] = item
+
+            elif card.type == "event" and card.period_id in period_map:
+                item.setText(0, "EVENT: " + card.summary)
+                item.setData(0, Qt.UserRole, card_data)
+                period_map[card.period_id].addChild(item)
+                event_map[card.id] = item
+
+            elif card.type == "scene" and card.event_id in event_map:
+                item.setText(0, "SCENE: " + card.summary)
+                item.setData(0, Qt.UserRole, card_data)
+                event_map[card.event_id].addChild(item)
+
+            self.main_tree.expandAll()
