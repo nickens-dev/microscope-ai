@@ -1,46 +1,35 @@
-# Byte-compiled / optimized / DLL files
+# JavaScript
+node_modules/
+dist/
+.vite/
+
+# Python legacy
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Virtual environment
 .venv/
 env/
 venv/
 ENV/
 *.env
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
-# PyInstaller
 *.spec
-dist/
 build/
-
-# VSCode & IDE configs
-.vscode/
-.idea/
-
-# PyQt/PySide build artifacts
 *.qrc.*
-*.pyc
 *.pyo
 *.pyd
 *.pdb
 
-# macOS/Linux system files
+# Editors and operating systems
+.vscode/
+.idea/
 .DS_Store
 *.swp
 
-# Log and temp files
+# Logs, caches, tests
 *.log
 *.tmp
-
-# Coverage reports
+.ipynb_checkpoints/
 htmlcov/
 .tox/
 .coverage
@@ -49,6 +38,4 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-
-# Test output
 test_output/
