@@ -1,5 +1,5 @@
 from enum import StrEnum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 class PlayerController(StrEnum):
     HUMAN = "human"
@@ -16,6 +16,16 @@ class CreatePlayerInput(BaseModel):
     model_config = {
         "populate_by_name": True,
     }
+
+    @model_validator(mode='after')
+    def validate_persona_prompt(self):
+        if self.controller == PlayerController.AI:
+            if not self.persona_prompt or not self.persona_prompt.strip():
+                raise ValueError("AI players must have a persona prompt.")
+        if self.controller ==  PlayerController.HUMAN:
+            if self.persona_prompt is not None:
+                raise ValueError("Human players cannot have a persona prompt.")
+        return self
 
 class CreateGameInput(BaseModel):
     title: str = Field(min_length=1)
