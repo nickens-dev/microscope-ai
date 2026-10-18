@@ -1,5 +1,21 @@
 $kind: http-request
-description: ""
+description: |-
+  Verifies that a human-controlled player cannot have an AI persona prompt.
+
+  The first player uses the `"human"` controller but supplies a nonempty `personaPrompt`.
+
+  Expected behavior:
+
+  - Returns `422 Unprocessable Entity`.
+      
+  - Includes a validation error associated with the first player.
+      
+  - Reports that human players cannot have a persona prompt.
+      
+  - Does not create a game.
+      
+
+  This test protects the distinction between human-controlled and AI-controlled seats.
 url: "{{base_url}}/api/games"
 method: POST
 body:
@@ -35,4 +51,48 @@ body:
     \  ]\r
 
     }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Response status is 422\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response contains validation errors\", function () {\r
+
+      \    pm.expect(response.detail).to.be.an(\"array\").that.is.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"First human player cannot have a persona prompt\", function () {\r
+
+      \    const error = response.detail.find(function (item) {\r
+
+      \        return (\r
+
+      \            item.loc.includes(\"players\") &&\r
+
+      \            item.loc.includes(0) &&\r
+
+      \            item.msg.includes(\"Human players cannot have a persona prompt\")\r
+
+      \        );\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(error, \"Expected human persona validation error\").to.exist;\r
+
+      });"
+    language: text/javascript
 order: 2699

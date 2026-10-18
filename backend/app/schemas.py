@@ -1,9 +1,22 @@
 from enum import StrEnum
+from datetime import datetime
+from uuid import UUID
 from pydantic import BaseModel, Field, model_validator
+
+
+
 
 class PlayerController(StrEnum):
     HUMAN = "human"
     AI = "ai"
+
+class GameStatus(StrEnum):
+    SETUP = "setup"
+    ACTIVE = "active"
+    COMPLETE = "complete"
+
+
+
 
 class CreatePlayerInput(BaseModel):
     name: str = Field(min_length=1)
@@ -37,6 +50,38 @@ class CreateGameInput(BaseModel):
         min_length=2,
         max_length=5
     )
+
+    model_config = {
+        "populate_by_name": True,
+    }
+
+
+
+class PlayerResponse(BaseModel):
+    id: UUID
+    seat: int = Field(ge=1, le=5)
+    name: str
+    controller: PlayerController
+    persona_prompt: str | None = Field(
+        default=None,
+        alias="personaPrompt"
+    )
+
+    model_config = {
+        "populate_by_name": True,
+    }
+
+class GameResponse(BaseModel):
+    id: UUID
+    title: str
+    status: GameStatus
+    big_picture: str = Field(
+        min_length=1,
+        alias="bigPicture"
+    )
+    players: list[PlayerResponse]
+    created_at: datetime = Field(alias="createdAt")
+    updated_at: datetime = Field(alias="updatedAt")
 
     model_config = {
         "populate_by_name": True,

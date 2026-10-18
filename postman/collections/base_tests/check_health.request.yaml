@@ -1,5 +1,18 @@
 $kind: http-request
-url: "{{base_url}}\\api\\health"
+description: |-
+  Checks whether the Microscope AI API is running and reachable.
+
+  This request sends `GET /api/health` without authentication or a request body.
+
+  Expected behavior:
+
+  - Returns `200 OK`.
+      
+  - Returns a JSON object with `status` set to `"ok"`.
+      
+
+  This is a basic availability check. It does not verify database access or other application dependencies.
+url: "{{base_url}}/api/health"
 method: GET
 body:
   type: formdata

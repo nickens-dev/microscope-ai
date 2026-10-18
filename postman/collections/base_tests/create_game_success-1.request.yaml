@@ -1,6 +1,35 @@
 $kind: http-request
 name: create_game_success
-description: ""
+description: |-
+  Creates a new Microscope game from a valid setup payload.
+
+  The request contains:
+
+  - A title and big picture.
+      
+  - One human player without a persona prompt.
+      
+  - One AI player with a nonempty persona prompt.
+      
+
+  Expected behavior:
+
+  - Returns `201 Created`.
+      
+  - Assigns a server-generated game ID.
+      
+  - Sets the initial game status to `"setup"`.
+      
+  - Assigns each player a server-generated ID.
+      
+  - Assigns seats in request order, beginning with seat 1.
+      
+  - Returns creation and update timestamps.
+      
+  - Preserves the submitted player names, controller types, and AI persona prompt.
+      
+
+  This endpoint currently constructs and returns the game but does not persist it.
 url: "{{base_url}}/api/games"
 method: POST
 body:
@@ -36,4 +65,40 @@ body:
     \  ]\r
 
     }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Response status is 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      const game = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Game has server-generated fields\", function () {\r
+
+      \    pm.expect(game.id).to.be.a(\"string\");\r
+
+      \    pm.expect(game.status).to.eql(\"setup\");\r
+
+      \    pm.expect(game.createdAt).to.be.a(\"string\");\r
+
+      \    pm.expect(game.updatedAt).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Players have ordered seats\", function () {\r
+
+      \    pm.expect(game.players[0].seat).to.eql(1);\r
+
+      \    pm.expect(game.players[1].seat).to.eql(2);\r
+
+      });"
+    language: text/javascript
 order: 5000
