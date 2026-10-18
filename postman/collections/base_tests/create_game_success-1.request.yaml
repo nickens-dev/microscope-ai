@@ -1,0 +1,39 @@
+$kind: http-request
+name: create_game_success
+description: ""
+url: "{{base_url}}/api/games"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"The empire learns to remember\",\r
+
+    \  \"bigPicture\": \"A civilization discovers that memory can be mined.\",\r
+
+    \  \"players\": [\r
+
+    \    {\r
+
+    \      \"name\": \"Quinn\",\r
+
+    \      \"controller\": \"human\",\r
+
+    \      \"personaPrompt\": null\r
+
+    \    },\r
+
+    \    {\r
+
+    \      \"name\": \"Mara\",\r
+
+    \      \"controller\": \"ai\",\r
+
+    \      \"personaPrompt\": \"A tragic historian.\"\r
+
+    \    }\r
+
+    \  ]\r
+
+    }"
+order: 5000
