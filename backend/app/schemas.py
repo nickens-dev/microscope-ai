@@ -8,10 +8,6 @@ Python attributes use snake_case. JSON properties use camelCase aliases where
 needed, such as ``big_picture`` becoming ``bigPicture``.
 """
 
-# ---------------------------------------------------------------------------
-# IMPORTS
-# ---------------------------------------------------------------------------
-
 from enum import StrEnum
 from datetime import datetime
 from uuid import UUID
@@ -35,7 +31,7 @@ class GameStatus(StrEnum):
     COMPLETE = "complete"
 
 # ---------------------------------------------------------------------------
-# API INPUT SCHEMA
+# REQUEST MODELS
 # ---------------------------------------------------------------------------
 
 class CreatePlayerInput(BaseModel):
@@ -90,7 +86,7 @@ class CreateGameInput(BaseModel):
     }
 
 # ---------------------------------------------------------------------------
-# API RESPONSE SCHEMA
+# RESPONSE MODELS
 # ---------------------------------------------------------------------------
 
 class PlayerResponse(BaseModel):

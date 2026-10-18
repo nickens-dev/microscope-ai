@@ -14,10 +14,6 @@ Game data is not yet persisted. Creating a game currently constructs and
 returns a response that exists only for the duration of the request.
 """
 
-# ---------------------------------------------------------------------------
-# IMPORTS
-# ---------------------------------------------------------------------------
-
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -31,7 +27,7 @@ from app.schemas import (
 )
 
 # ---------------------------------------------------------------------------
-# API SETUP
+# APPLICATION CONFIGURATION
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
@@ -40,7 +36,7 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
-# API HEALTH
+# HEALTH ROUTES
 # ---------------------------------------------------------------------------
 
 @app.get("/api/health")
@@ -53,7 +49,7 @@ def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 # ---------------------------------------------------------------------------
-# GAME MANAGEMENT API
+# GAME ROUTES
 # ---------------------------------------------------------------------------
 
 @app.post(
