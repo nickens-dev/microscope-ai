@@ -11,6 +11,6 @@ app = FastAPI(
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
-@app.get("api/games")
+@app.post("/api/games")
 def create_game(game: CreateGameInput):
     return game

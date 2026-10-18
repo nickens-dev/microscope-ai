@@ -9,6 +9,7 @@ class CreatePlayerInput(BaseModel):
     name: str = Field(min_length=1)
     controller: PlayerController
     persona_prompt: str | None = Field(
+        default=None,
         min_length=1,
         alias="personaPrompt"
     )
@@ -30,7 +31,6 @@ class CreatePlayerInput(BaseModel):
 class CreateGameInput(BaseModel):
     title: str = Field(min_length=1)
     big_picture: str = Field(
-        default=None,
         alias="bigPicture"
     )
     players: list[CreatePlayerInput] = Field(
