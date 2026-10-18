@@ -69,8 +69,6 @@ scripts:
   - type: afterResponse
     code: "const game = pm.response.json();\r
 
-      pm.environment.set(\"game_id\", game.id);\r
-
       \r
 
       pm.test(\"Response status is 201\", function () {\r
@@ -101,6 +99,14 @@ scripts:
 
       \    pm.expect(game.players[1].seat).to.eql(2);\r
 
-      });"
+      });\r
+
+      \r
+
+      if (pm.response.code === 201 && game.id) {\r
+
+      \    pm.environment.set(\"game_id\", game.id);\r
+
+      }"
     language: text/javascript
 order: 5000
