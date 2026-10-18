@@ -67,15 +67,17 @@ body:
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Response status is 201\", function () {\r
+    code: "const game = pm.response.json();\r
+
+      pm.environment.set(\"game_id\", game.id);\r
+
+      \r
+
+      pm.test(\"Response status is 201\", function () {\r
 
       \    pm.response.to.have.status(201);\r
 
       });\r
-
-      \r
-
-      const game = pm.response.json();\r
 
       \r
 

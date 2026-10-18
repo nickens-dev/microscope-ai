@@ -1,0 +1,35 @@
+$kind: http-request
+description: |2-
+    
+  Verifies the response produced when a valid game ID does not identify a stored  
+  game.  
+    
+  This request supplies a syntactically valid UUID that is not expected to exist:
+
+  ```
+  GET /api/games/00000000-0000-0000-0000-000000000000
+
+   ```
+url: "{{base_url}}/api/games/00000000-0000-0000-0000-000000000000"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Response status is 404\", function () {\r
+
+      \    pm.response.to.have.status(404);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response explains that the game was not found\", function () {\r
+
+      \    pm.expect(response.detail).to.eql(\"Game not found\");\r
+
+      });"
+    language: text/javascript
+order: 7000

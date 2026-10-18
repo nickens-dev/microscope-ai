@@ -15,9 +15,9 @@ returns a response that exists only for the duration of the request.
 """
 
 from datetime import datetime, timezone
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 
 from app.schemas import (
     CreateGameInput,
@@ -25,6 +25,8 @@ from app.schemas import (
     GameStatus,
     PlayerResponse,
 )
+
+from app.storage import games
 
 # ---------------------------------------------------------------------------
 # APPLICATION CONFIGURATION
@@ -78,7 +80,7 @@ def create_game(game: CreateGameInput) -> GameResponse:
         for seat, player, in enumerate(game.players, start=1)
     ]
 
-    return GameResponse(
+    created_game = GameResponse(
         id=uuid4(),
         title=game.title,
         status=GameStatus("setup"),
@@ -87,3 +89,24 @@ def create_game(game: CreateGameInput) -> GameResponse:
         createdAt=now,
         updatedAt=now,
     )
+
+    games[created_game.id] = created_game
+
+    return created_game
+
+@app.get(
+    "/api/games/{game_id}",
+    response_model=GameResponse,
+)
+def get_game(game_id: UUID) -> GameResponse:
+    """Return one game by its server-generated identifier."""
+
+    game = games.get(game_id)
+
+    if game is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Game not found",
+        )
+
+    return game

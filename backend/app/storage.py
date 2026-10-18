@@ -12,4 +12,4 @@ from app.schemas import GameResponse
 # ---------------------------------------------------------------------------
 
 # The dictionary maps game UUID -> complete GameResponse
-game: dict[UUID, GameResponse] = {}
+games: dict[UUID, GameResponse] = {}

@@ -2,3 +2,5 @@ name: dev_env_base
 values:
   - key: base_url
     value: ''
+  - key: game_id
+    value: ''
