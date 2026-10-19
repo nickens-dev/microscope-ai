@@ -36,7 +36,38 @@ function Setup({ players, setPlayers, onStart }) {
     <section className="setup-copy">
       <div className="brand"><span className="brand-mark">M</span> MICROSCOPE <em>AI</em></div>
       <p className="eyebrow">A history engine for humans and agents</p>
-      <h1>Build a history.<br/><i>Discover what it means.</i></h1>
+      <svg className="history-moon" viewBox="0 0 480 480" role="img" aria-labelledby="history-moon-title">
+        <title id="history-moon-title">A thin gold crescent surrounding three histories branching downward</title>
+        <defs>
+          <mask id="history-moon-crescent" maskUnits="userSpaceOnUse" x="0" y="0" width="480" height="480">
+            <rect width="480" height="480" fill="black" />
+            <circle cx="240" cy="240" r="204" fill="white" />
+            <circle cx="264.086716" cy="240" r="193.086716" fill="black" />
+          </mask>
+        </defs>
+        <circle cx="240" cy="240" r="204" fill="currentColor" mask="url(#history-moon-crescent)" />
+        <g fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M160 158V188M140 220V188H180V220 M240 158V188M220 220V188H260V220 M320 158V188M300 220V188H340V220" />
+          <path d="M140 240V268H122V305 M180 240V278H193V318 M220 240V263H235V299 M260 240V279H272V327 M300 240V266H312V306 M340 240V275H358V318" />
+        </g>
+        <g fill="currentColor">
+          <circle cx="160" cy="146" r="13" />
+          <rect x="228" y="134" width="24" height="24" rx="2" />
+          <path d="M320 130L336 146L320 162L304 146Z" />
+          <rect x="130" y="220" width="20" height="20" rx="2" />
+          <circle cx="180" cy="230" r="10" />
+          <path d="M220 217L233 230L220 243L207 230Z" />
+          <path d="M260 219L272 240H248Z" />
+          <circle cx="300" cy="230" r="10" />
+          <rect x="330" y="220" width="20" height="20" rx="2" />
+          <circle cx="122" cy="313" r="8" />
+          <path d="M193 316L204 335H182Z" />
+          <rect x="227" y="299" width="16" height="16" rx="1" />
+          <path d="M272 326L283 337L272 348L261 337Z" />
+          <path d="M312 304L323 323H301Z" />
+          <circle cx="358" cy="326" r="8" />
+        </g>
+      </svg>
       <p className="lede">Configure your table, then let the game guide each Lens, card, and scene without deciding the history for you.</p>
       <div className="rule-strip"><span>NO GM</span><span>NON-LINEAR</span><span>2–5 PLAYERS</span></div>
     </section>
