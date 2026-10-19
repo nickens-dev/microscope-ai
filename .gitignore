@@ -3,6 +3,11 @@ node_modules/
 dist/
 .vite/
 
+# Local SQLite data
+backend/data/
+*.db-shm
+*.db-wal
+
 # Python legacy
 __pycache__/
 *.py[cod]

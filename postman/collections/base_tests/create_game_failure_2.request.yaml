@@ -1,0 +1,98 @@
+$kind: http-request
+description: |-
+  Verifies that whitespace alone is not accepted as an AI persona prompt.
+
+  The second player uses the `"ai"` controller and supplies a `personaPrompt` containing only spaces.
+
+  Expected behavior:
+
+  - Returns `422 Unprocessable Entity`.
+      
+  - Includes a validation error associated with the second player.
+      
+  - Reports that AI players must have a persona prompt.
+      
+  - Does not create a game.
+      
+
+  This test confirms that validation considers meaningful prompt content rather than only string length.
+url: "{{base_url}}/api/games"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"The empire learns to remember\",\r
+
+    \  \"bigPicture\": \"A civilization discovers that memory can be mined.\",\r
+
+    \  \"players\": [\r
+
+    \    {\r
+
+    \      \"name\": \"Quinn\",\r
+
+    \      \"controller\": \"human\",\r
+
+    \      \"personaPrompt\": null\r
+
+    \    },\r
+
+    \    {\r
+
+    \      \"name\": \"Mara\",\r
+
+    \      \"controller\": \"ai\",\r
+
+    \      \"personaPrompt\": \"   \"\r
+
+    \    }\r
+
+    \  ]\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Response status is 422\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response contains validation errors\", function () {\r
+
+      \    pm.expect(response.detail).to.be.an(\"array\").that.is.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Whitespace is not a valid AI persona prompt\", function () {\r
+
+      \    const error = response.detail.find(function (item) {\r
+
+      \        return (\r
+
+      \            item.loc.includes(\"players\") &&\r
+
+      \            item.loc.includes(1) &&\r
+
+      \            item.msg.includes(\"AI players must have a persona prompt\")\r
+
+      \        );\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(error, \"Expected whitespace persona validation error\").to.exist;\r
+
+      });"
+    language: text/javascript
+order: 2000
