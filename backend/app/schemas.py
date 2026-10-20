@@ -106,6 +106,7 @@ class PlayerResponse(BaseModel):
 
     model_config = {
         "populate_by_name": True,
+        "from_attributes": True,
     }
 
 class GameResponse(BaseModel):
@@ -128,4 +129,5 @@ class GameResponse(BaseModel):
 
     model_config = {
         "populate_by_name": True,
+        "from_attributes": True,
     }
