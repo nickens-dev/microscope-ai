@@ -21,7 +21,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import Base, engine, get_database_session
-from app import models
 from app.models import GameModel, PlayerModel
 from app.schemas import (
     CreateGameInput,
@@ -38,6 +37,8 @@ app = FastAPI(
     title="Microscope AI API",
     version="1.0.0"
 )
+
+Base.metadata.create_all(bind=engine)
 
 # ---------------------------------------------------------------------------
 # HEALTH ROUTES
@@ -75,15 +76,15 @@ def create_game(
     """
     created_game = GameModel(
         title=game.title,
-        bigPicture=game.big_picture,
+        big_picture=game.big_picture,
         status=GameStatus.SETUP.value,
     )
 
-    created_game.Players = [
+    created_game.players = [
         PlayerModel(
             seat=seat,
             name=player.name,
-            controller=player.controller,
+            controller=player.controller.value,
             persona_prompt=player.persona_prompt,
         )
         for seat, player, in enumerate(game.players, start=1)
