@@ -9,9 +9,6 @@ The route layer is currently responsible for:
 - Validating game-creation requests with Pydantic schemas.
 - Assigning server-owned game and player values.
 - Returning a documented response model.
-
-Game data is not yet persisted. Creating a game currently constructs and
-returns a response that exists only for the duration of the request.
 """
 
 from uuid import UUID
@@ -26,7 +23,6 @@ from app.schemas import (
     CreateGameInput,
     GameResponse,
     GameStatus,
-    PlayerResponse,
 )
 
 # ---------------------------------------------------------------------------
