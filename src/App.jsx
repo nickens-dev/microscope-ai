@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { createGame } from "./api/games.js";
 
 const seedCards = [
   { id: 'history', type: 'History', title: 'The empire learns to remember', summary: 'A civilization discovers that memory can be mined, traded, and weaponized.', tone: 'light', parent: null },
@@ -160,7 +161,47 @@ function Game({ players, onExit }) {
 }
 
 export default function App() {
-  const [screen,setScreen]=useState('setup')
-  const [players,setPlayers]=useState(initialPlayers)
-  return screen==='setup' ? <Setup players={players} setPlayers={setPlayers} onStart={()=>setScreen('game')} /> : <Game players={players} onExit={()=>setScreen('setup')} />
+  const [screen, setScreen] = useState("setup");
+  const [players, setPlayers] = useState(initialPlayers);
+
+  async function testCreateGame() {
+    try {
+      const game = await createGame({
+        title: "The empire learns to remember",
+        bigPicture: "A civilization discovers that memory can be mined.",
+        players: [
+          {
+            name: "Quinn",
+            controller: "human",
+            personaPrompt: null,
+          },
+          {
+            name: "Mara",
+            controller: "ai",
+            personaPrompt: "A tragic historian.",
+          },
+        ],
+      });
+
+      console.log("Created game:", game);
+
+      // Navigate only after creation succeeds.
+      setScreen("game");
+    } catch (error) {
+      console.error("Creation failed:", error);
+    }
+  }
+
+  return screen === "setup" ? (
+    <Setup
+      players={players}
+      setPlayers={setPlayers}
+      onStart={testCreateGame}
+    />
+  ) : (
+    <Game
+      players={players}
+      onExit={() => setScreen("setup")}
+    />
+  );
 }
